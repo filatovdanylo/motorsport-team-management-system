@@ -10,11 +10,21 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true, length = 100)
     private String name;
+
+    @Column(nullable = false, unique = true, length = 10)
     private String shortName;
+
+    @Column(nullable = false, length = 100)
     private String country;
+
     private Integer foundedYear;
+
+    @Column(length = 150)
     private String teamPrincipal;
+
+    @Column(nullable = false)
     private OffsetDateTime createdAt;
 
     public Team(String name, String shortName, String country, Integer foundedYear, String teamPrincipal, OffsetDateTime createdAt) {
