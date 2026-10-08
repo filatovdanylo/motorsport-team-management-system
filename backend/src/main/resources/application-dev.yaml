@@ -1,3 +1,5 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:./
+    url: jdbc:postgresql://localhost:5433/motorsport-management-system-db
+    username: postgres
+    password: ${DATABASE_DEV_PASSWORD}
