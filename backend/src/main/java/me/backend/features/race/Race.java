@@ -3,17 +3,21 @@ package me.backend.features.race;
 import jakarta.persistence.*;
 import me.backend.features.season.Season;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "races")
 public class Race {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private int roundNumber;
-    private OffsetDateTime date;
+    private LocalDate raceDate;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,20 +28,24 @@ public class Race {
     @JoinColumn(name = "circuit_id")
     private Circuit circuit;
 
+    @OneToMany(mappedBy = "race", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RaceResult> results = new ArrayList<>();
+
     public enum Status {
         SCHEDULED,
         COMPLETED,
         CANCELLED
     }
 
-    public Race(String name, int roundNumber, OffsetDateTime date, Status status, Season season, Circuit circuit) {
+    public Race(String name, int roundNumber, LocalDate raceDate, Status status, Season season, Circuit circuit) {
         this.name = name;
         this.roundNumber = roundNumber;
-        this.date = date;
+        this.raceDate = raceDate;
         this.status = status;
         this.season = season;
         this.circuit = circuit;
     }
+
     public Race() {}
 
     public String getName() {
@@ -56,12 +64,12 @@ public class Race {
         this.roundNumber = roundNumber;
     }
 
-    public OffsetDateTime getDate() {
-        return date;
+    public LocalDate getRaceDate() {
+        return raceDate;
     }
 
-    public void setDate(OffsetDateTime date) {
-        this.date = date;
+    public void setRaceDate(LocalDate raceDate) {
+        this.raceDate = raceDate;
     }
 
     public Status getStatus() {
@@ -86,6 +94,24 @@ public class Race {
 
     public void setCircuit(Circuit circuit) {
         this.circuit = circuit;
+    }
+
+    public List<RaceResult> getResults() {
+        return results;
+    }
+
+    public void setResults(List<RaceResult> results) {
+        this.results = results;
+    }
+
+    public void addResult(RaceResult result) {
+        results.add(result);
+        result.setRace(this);
+    }
+
+    public void removeResult(RaceResult result) {
+        results.remove(result);
+        result.setRace(null);
     }
 
     public void setId(Long id) {

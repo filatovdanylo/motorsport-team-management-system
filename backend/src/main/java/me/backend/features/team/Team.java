@@ -1,22 +1,86 @@
 package me.backend.features.team;
 
 import jakarta.persistence.*;
-import me.backend.features.driver.Driver;
 
-import java.math.BigDecimal;
-import java.util.List;
+import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "teams")
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     private String name;
     private String shortName;
     private String country;
-    private int foundedYear;
-    private String teamPrinciple;
-    private BigDecimal budget;
+    private Integer foundedYear;
+    private String teamPrincipal;
+    private OffsetDateTime createdAt;
+
+    public Team(String name, String shortName, String country, Integer foundedYear, String teamPrincipal, OffsetDateTime createdAt) {
+        this.name = name;
+        this.shortName = shortName;
+        this.country = country;
+        this.foundedYear = foundedYear;
+        this.teamPrincipal = teamPrincipal;
+        this.createdAt = createdAt;
+    }
+
+    public Team() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public Integer getFoundedYear() {
+        return foundedYear;
+    }
+
+    public void setFoundedYear(Integer foundedYear) {
+        this.foundedYear = foundedYear;
+    }
+
+    public String getTeamPrincipal() {
+        return teamPrincipal;
+    }
+
+    public void setTeamPrincipal(String teamPrincipal) {
+        this.teamPrincipal = teamPrincipal;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }

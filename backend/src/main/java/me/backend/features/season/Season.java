@@ -3,17 +3,24 @@ package me.backend.features.season;
 import jakarta.persistence.*;
 import me.backend.features.race.Race;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "seasons")
+@Table(name = "season")
 public class Season {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
+
+    private String name;
     private int year;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
+
+    private OffsetDateTime createdAt;
 
     @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Race> races = new ArrayList<>();
@@ -24,11 +31,13 @@ public class Season {
         COMPLETED
     }
 
-    public Season(String title, int year, Status status) {
-        this.title = title;
+    public Season(String name, int year, Status status, OffsetDateTime createdAt) {
+        this.name = name;
         this.year = year;
         this.status = status;
+        this.createdAt = createdAt;
     }
+
     public Season() {}
 
     public void addRace(Race race) {
@@ -41,12 +50,20 @@ public class Season {
         race.setSeason(null);
     }
 
-    public String getTitle() {
-        return title;
+    public List<Race> getRaces() {
+        return races;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setRaces(List<Race> races) {
+        this.races = races;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getYear() {
@@ -63,6 +80,14 @@ public class Season {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public void setId(Long id) {

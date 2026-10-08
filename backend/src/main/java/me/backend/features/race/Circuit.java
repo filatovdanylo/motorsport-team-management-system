@@ -2,11 +2,12 @@ package me.backend.features.race;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "circuits")
 public class Circuit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,19 +19,20 @@ public class Circuit {
     private String name;
     private String country;
     private String city;
-    private Double lengthKm;
-    private Double numberOfTurnsPerLap;
+    private BigDecimal lengthKm;
     private int numberOfLaps;
+    private OffsetDateTime createdAt;
 
-    public Circuit(List<Race> races, String name, String country, String city, Double lengthKm, Double numberOfTurnsPerLap, int numberOfLaps) {
+    public Circuit(List<Race> races, String name, String country, String city, BigDecimal lengthKm, int numberOfLaps, OffsetDateTime createdAt) {
         this.races = races;
         this.name = name;
         this.country = country;
         this.city = city;
         this.lengthKm = lengthKm;
-        this.numberOfTurnsPerLap = numberOfTurnsPerLap;
         this.numberOfLaps = numberOfLaps;
+        this.createdAt = createdAt;
     }
+
     public Circuit() {}
 
     public List<Race> getRaces() {
@@ -65,20 +67,12 @@ public class Circuit {
         this.city = city;
     }
 
-    public Double getLengthKm() {
+    public BigDecimal getLengthKm() {
         return lengthKm;
     }
 
-    public void setLengthKm(Double lengthKm) {
+    public void setLengthKm(BigDecimal lengthKm) {
         this.lengthKm = lengthKm;
-    }
-
-    public Double getNumberOfTurnsPerLap() {
-        return numberOfTurnsPerLap;
-    }
-
-    public void setNumberOfTurnsPerLap(Double numberOfTurnsPerLap) {
-        this.numberOfTurnsPerLap = numberOfTurnsPerLap;
     }
 
     public int getNumberOfLaps() {
@@ -87,6 +81,14 @@ public class Circuit {
 
     public void setNumberOfLaps(int numberOfLaps) {
         this.numberOfLaps = numberOfLaps;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public void addRace(Race race) {
@@ -106,5 +108,4 @@ public class Circuit {
     public Long getId() {
         return id;
     }
-
 }
