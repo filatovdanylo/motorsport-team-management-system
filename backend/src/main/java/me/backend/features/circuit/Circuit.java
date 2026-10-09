@@ -1,6 +1,7 @@
-package me.backend.features.race;
+package me.backend.features.circuit;
 
 import jakarta.persistence.*;
+import me.backend.features.race.Race;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -16,15 +17,25 @@ public class Circuit {
     @OneToMany(mappedBy = "circuit", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Race> races = new ArrayList<>();
 
+    @Column(nullable = false, unique = true, length = 150)
     private String name;
+
+    @Column(nullable = false, length = 100)
     private String country;
+
+    @Column(nullable = false, length = 100)
     private String city;
+
+    @Column(nullable = false, precision = 7, scale = 3)
     private BigDecimal lengthKm;
-    private int numberOfLaps;
+
+    @Column(nullable = false)
+    private Integer numberOfLaps;
+
+    @Column(nullable = false)
     private OffsetDateTime createdAt;
 
-    public Circuit(List<Race> races, String name, String country, String city, BigDecimal lengthKm, int numberOfLaps, OffsetDateTime createdAt) {
-        this.races = races;
+    public Circuit(String name, String country, String city, BigDecimal lengthKm, Integer numberOfLaps, OffsetDateTime createdAt) {
         this.name = name;
         this.country = country;
         this.city = city;
@@ -34,6 +45,16 @@ public class Circuit {
     }
 
     public Circuit() {}
+
+    public void addRace(Race race) {
+        races.add(race);
+        race.setCircuit(this);
+    }
+
+    public void removeRace(Race race) {
+        races.remove(race);
+        race.setCircuit(null);
+    }
 
     public List<Race> getRaces() {
         return races;
@@ -75,11 +96,11 @@ public class Circuit {
         this.lengthKm = lengthKm;
     }
 
-    public int getNumberOfLaps() {
+    public Integer getNumberOfLaps() {
         return numberOfLaps;
     }
 
-    public void setNumberOfLaps(int numberOfLaps) {
+    public void setNumberOfLaps(Integer numberOfLaps) {
         this.numberOfLaps = numberOfLaps;
     }
 
@@ -89,16 +110,6 @@ public class Circuit {
 
     public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public void addRace(Race race) {
-        races.add(race);
-        race.setCircuit(this);
-    }
-
-    public void removeRace(Race race) {
-        races.remove(race);
-        race.setCircuit(null);
     }
 
     public void setId(Long id) {

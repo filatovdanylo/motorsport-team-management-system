@@ -1,6 +1,7 @@
 package me.backend.features.race;
 
 import jakarta.persistence.*;
+import me.backend.features.circuit.Circuit;
 import me.backend.features.season.Season;
 
 import java.time.LocalDate;
