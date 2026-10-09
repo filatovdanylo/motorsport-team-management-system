@@ -11,15 +11,25 @@ public class Driver {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String firstName;
+
+    @Column(nullable = false, length = 100)
     private String lastName;
+
+    @Column(nullable = false, length = 100)
     private String nationality;
+
     private LocalDate dateOfBirth;
-    private int number;
+
+    @Column(nullable = false, unique = true)
+    private Integer number;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private Status status;
 
+    @Column(nullable = false)
     private OffsetDateTime createdAt;
 
     public enum Status {
@@ -28,7 +38,7 @@ public class Driver {
         RETIRED
     }
 
-    public Driver(String firstName, String lastName, String nationality, LocalDate dateOfBirth, int number, Status status, OffsetDateTime createdAt) {
+    public Driver(String firstName, String lastName, String nationality, LocalDate dateOfBirth, Integer number, Status status, OffsetDateTime createdAt) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nationality = nationality;
@@ -80,11 +90,11 @@ public class Driver {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public int getNumber() {
+    public Integer getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(Integer number) {
         this.number = number;
     }
 
