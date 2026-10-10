@@ -14,12 +14,17 @@ public class Season {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true, length = 100)
     private String name;
+
+    @Column(nullable = false, unique = true)
     private int year;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private Status status;
 
+    @Column(nullable = false)
     private OffsetDateTime createdAt;
 
     @OneToMany(mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
