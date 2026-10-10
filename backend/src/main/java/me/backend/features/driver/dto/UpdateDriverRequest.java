@@ -1,5 +1,7 @@
 package me.backend.features.driver.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,6 +23,11 @@ public record UpdateDriverRequest(
         String nationality,
 
         LocalDate dateOfBirth,
+
+        @NotNull
+        @Min(0)
+        @Max(999)
+        Integer number,
 
         @NotNull
         Driver.Status status

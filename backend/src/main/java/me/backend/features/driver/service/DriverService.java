@@ -70,10 +70,15 @@ public class DriverService {
         Driver databaseDriver = driverRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Driver with id " + id + " not found"));
 
+        if (driverRepository.existsByNumberAndIdNot(request.number(), id)) {
+            throw new AlreadyExistsException("Driver with number '" + request.number() + "' already exists");
+        }
+
         databaseDriver.setFirstName(request.firstName());
         databaseDriver.setLastName(request.lastName());
         databaseDriver.setNationality(request.nationality());
         databaseDriver.setDateOfBirth(request.dateOfBirth());
+        databaseDriver.setNumber(request.number());
         databaseDriver.setStatus(request.status());
 
         driverRepository.save(databaseDriver);
