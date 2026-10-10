@@ -38,13 +38,11 @@ public class Race {
         CANCELLED
     }
 
-    public Race(String name, int roundNumber, LocalDate raceDate, Status status, Season season, Circuit circuit) {
+    public Race(String name, int roundNumber, LocalDate raceDate, Status status) {
         this.name = name;
         this.roundNumber = roundNumber;
         this.raceDate = raceDate;
         this.status = status;
-        this.season = season;
-        this.circuit = circuit;
     }
 
     public Race() {}
