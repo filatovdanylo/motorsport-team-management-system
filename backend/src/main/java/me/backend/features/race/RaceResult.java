@@ -37,10 +37,8 @@ public class RaceResult {
         DNQ
     }
 
-    public RaceResult(Race race, Driver driver, Integer position, BigDecimal points,
+    public RaceResult(Integer position, BigDecimal points,
                       boolean fastestLap, Status status, Long totalRaceTimeMs) {
-        this.race = race;
-        this.driver = driver;
         this.position = position;
         this.points = points;
         this.fastestLap = fastestLap;

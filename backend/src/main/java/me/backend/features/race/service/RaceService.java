@@ -91,9 +91,6 @@ public class RaceService {
         Race race = raceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Race not found with id: " + id));
 
-        SeasonResponse seasonDto = seasonService.getSeasonById(request.seasonId());
-        CircuitResponse circuitDto = circuitService.getCircuitById(request.circuitId());
-
         if (raceRepository.existsBySeasonIdAndRoundNumberAndIdNot(
                 request.seasonId(),
                 request.roundNumber(),
@@ -104,6 +101,9 @@ public class RaceService {
                             + " already exists in season " + request.seasonId()
             );
         }
+
+        SeasonResponse seasonDto = seasonService.getSeasonById(request.seasonId());
+        CircuitResponse circuitDto = circuitService.getCircuitById(request.circuitId());
 
         race.setName(request.name());
         race.setRoundNumber(request.roundNumber());
