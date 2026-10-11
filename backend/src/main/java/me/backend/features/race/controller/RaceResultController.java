@@ -1,5 +1,6 @@
 package me.backend.features.race.controller;
 
+import jakarta.validation.Valid;
 import me.backend.features.race.dto.CreateRaceResultRequest;
 import me.backend.features.race.dto.RaceResultResponse;
 import me.backend.features.race.dto.UpdateRaceResultRequest;
@@ -15,6 +16,7 @@ import java.util.List;
 @RequestMapping("/api/race-results")
 public class RaceResultController {
     private final RaceResultService raceResultService;
+
     public RaceResultController(RaceResultService raceResultService) {
         this.raceResultService = raceResultService;
     }
@@ -30,8 +32,8 @@ public class RaceResultController {
     }
 
     @PostMapping
-    public ResponseEntity<RaceResultResponse> create(@RequestBody CreateRaceResultRequest request) {
-        var newRaceResult = raceResultService.create(request);
+    public ResponseEntity<RaceResultResponse> create(@Valid @RequestBody CreateRaceResultRequest request) {
+        RaceResultResponse newRaceResult = raceResultService.create(request);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -44,14 +46,14 @@ public class RaceResultController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable long id) {
         raceResultService.delete(id);
-
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RaceResultResponse> update(@PathVariable long id, @RequestBody UpdateRaceResultRequest request) {
-        var updatedRaceResult = raceResultService.update(id, request);
-
-        return ResponseEntity.ok(updatedRaceResult);
+    public ResponseEntity<RaceResultResponse> update(
+            @PathVariable long id,
+            @Valid @RequestBody UpdateRaceResultRequest request
+    ) {
+        return ResponseEntity.ok(raceResultService.update(id, request));
     }
 }

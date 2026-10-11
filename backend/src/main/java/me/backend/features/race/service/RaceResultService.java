@@ -15,7 +15,6 @@ import me.backend.features.race.dto.RaceResultResponse;
 import me.backend.features.race.dto.UpdateRaceResultRequest;
 import me.backend.features.race.repository.RaceResultRepository;
 import me.backend.features.season.dto.SeasonResponse;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +27,7 @@ public class RaceResultService {
     private final RaceService raceService;
     private final DriverService driverService;
     private final EntityManager entityManager;
+
     public RaceResultService(
             RaceResultRepository raceResultRepository,
             RaceService raceService,
@@ -46,20 +46,25 @@ public class RaceResultService {
                 .toList();
     }
 
-    public RaceResultResponse getById(@Param("id") Long id) {
-        return raceResultRepository.findByIdWithDetails(id).map(RaceResultService::mapRaceResultToDto)
+    public RaceResultResponse getById(long id) {
+        return raceResultRepository.findByIdWithDetails(id)
+                .map(RaceResultService::mapRaceResultToDto)
                 .orElseThrow(() -> new ResourceNotFoundException("Race result with id " + id + " not found"));
     }
 
     @Transactional
     public RaceResultResponse create(CreateRaceResultRequest request) {
-        if (raceResultRepository.existsByDriverIdAndRaceId(request.driverId(), request.raceId())) {
-            throw new AlreadyExistsException("RaceResult for driver with id "
-                    + request.driverId() + " participated in the race with id " + request.raceId() + " already exists");
-        }
-
         var raceDto = raceService.findById(request.raceId());
         var driverDto = driverService.getDriverById(request.driverId());
+
+        if (raceResultRepository.existsByDriverIdAndRaceId(request.driverId(), request.raceId())) {
+            throw driverAlreadyHasResult(request.driverId(), request.raceId());
+        }
+
+        if (request.position() != null
+                && raceResultRepository.existsByRaceIdAndPosition(request.raceId(), request.position())) {
+            throw positionAlreadyTaken(request.raceId(), request.position());
+        }
 
         var newRaceResult = new RaceResult(
                 request.position(),
@@ -88,27 +93,40 @@ public class RaceResultService {
     @Transactional
     public RaceResultResponse update(long id, UpdateRaceResultRequest request) {
         var raceResult = raceResultRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Race result with id " + id + " not found"));
-
-
-        if (raceResultRepository.existsByDriverIdAndRaceIdAndIdNot(request.driverId(), request.raceId(), id)) {
-            throw new AlreadyExistsException("RaceResult for driver with id "
-                    + request.driverId() + " participated in the race with id " + request.raceId() + " already exists");
-        }
+                .orElseThrow(() -> new ResourceNotFoundException("Race result with id " + id + " not found"));
 
         var raceDto = raceService.findById(request.raceId());
         var driverDto = driverService.getDriverById(request.driverId());
+
+        if (raceResultRepository.existsByDriverIdAndRaceIdAndIdNot(request.driverId(), request.raceId(), id)) {
+            throw driverAlreadyHasResult(request.driverId(), request.raceId());
+        }
+        if (request.position() != null
+                && raceResultRepository.existsByRaceIdAndPositionAndIdNot(request.raceId(), request.position(), id)) {
+            throw positionAlreadyTaken(request.raceId(), request.position());
+        }
 
         raceResult.setPosition(request.position());
         raceResult.setPoints(request.points());
         raceResult.setFastestLap(request.fastestLap());
         raceResult.setStatus(request.status());
+        raceResult.setTotalRaceTimeMs(request.totalRaceTimeMs());
         raceResult.setRace(entityManager.getReference(Race.class, request.raceId()));
         raceResult.setDriver(entityManager.getReference(Driver.class, request.driverId()));
 
         raceResultRepository.save(raceResult);
 
         return mapRaceResultToDto(raceResult, raceDto, driverDto);
+    }
+
+    private static AlreadyExistsException driverAlreadyHasResult(Long driverId, Long raceId) {
+        return new AlreadyExistsException(
+                "Race result for driver with id " + driverId + " in race with id " + raceId + " already exists");
+    }
+
+    private static AlreadyExistsException positionAlreadyTaken(Long raceId, Integer position) {
+        return new AlreadyExistsException(
+                "Position " + position + " is already taken in race with id " + raceId);
     }
 
     private static RaceResultResponse mapRaceResultToDto(RaceResult raceResult, RaceResponse raceDto, DriverResponse driverDto) {
@@ -125,44 +143,41 @@ public class RaceResultService {
     }
 
     private static RaceResultResponse mapRaceResultToDto(RaceResult raceResult) {
-        return new RaceResultResponse(
-                raceResult.getId(),
-                raceResult.getPosition(),
-                raceResult.getPoints(),
-                raceResult.isFastestLap(),
-                raceResult.getStatus(),
-                raceResult.getTotalRaceTimeMs(),
+        Race race = raceResult.getRace();
+        Driver driver = raceResult.getDriver();
+
+        return mapRaceResultToDto(
+                raceResult,
                 new RaceResponse(
-                        raceResult.getRace().getId(),
-                        raceResult.getRace().getName(),
-                        raceResult.getRace().getRoundNumber(),
-                        raceResult.getRace().getRaceDate(),
-                        raceResult.getRace().getStatus(),
+                        race.getId(),
+                        race.getName(),
+                        race.getRoundNumber(),
+                        race.getRaceDate(),
+                        race.getStatus(),
                         new SeasonResponse(
-                                raceResult.getRace().getSeason().getId(),
-                                raceResult.getRace().getSeason().getName(),
-                                raceResult.getRace().getSeason().getYear(),
-                                raceResult.getRace().getSeason().getStatus()
-                                ),
+                                race.getSeason().getId(),
+                                race.getSeason().getName(),
+                                race.getSeason().getYear(),
+                                race.getSeason().getStatus()
+                        ),
                         new CircuitResponse(
-                                raceResult.getRace().getCircuit().getId(),
-                                raceResult.getRace().getCircuit().getName(),
-                                raceResult.getRace().getCircuit().getCountry(),
-                                raceResult.getRace().getCircuit().getCity(),
-                                raceResult.getRace().getCircuit().getLengthKm(),
-                                raceResult.getRace().getCircuit().getNumberOfLaps()
+                                race.getCircuit().getId(),
+                                race.getCircuit().getName(),
+                                race.getCircuit().getCountry(),
+                                race.getCircuit().getCity(),
+                                race.getCircuit().getLengthKm(),
+                                race.getCircuit().getNumberOfLaps()
                         )
                 ),
                 new DriverResponse(
-                        raceResult.getDriver().getId(),
-                        raceResult.getDriver().getFirstName(),
-                        raceResult.getDriver().getLastName(),
-                        raceResult.getDriver().getNationality(),
-                        raceResult.getDriver().getDateOfBirth(),
-                        raceResult.getDriver().getNumber(),
-                        raceResult.getDriver().getStatus()
+                        driver.getId(),
+                        driver.getFirstName(),
+                        driver.getLastName(),
+                        driver.getNationality(),
+                        driver.getDateOfBirth(),
+                        driver.getNumber(),
+                        driver.getStatus()
                 )
         );
     }
-
 }

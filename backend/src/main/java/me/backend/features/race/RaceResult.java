@@ -12,19 +12,24 @@ public class RaceResult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "race_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "race_id", nullable = false)
     private Race race;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "driver_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "driver_id", nullable = false)
     private Driver driver;
 
     private Integer position;
+
+    @Column(nullable = false, precision = 6, scale = 2)
     private BigDecimal points;
+
+    @Column(nullable = false)
     private boolean fastestLap;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private Status status;
 
     private Long totalRaceTimeMs;

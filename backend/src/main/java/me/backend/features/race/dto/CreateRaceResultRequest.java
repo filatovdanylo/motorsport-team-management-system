@@ -1,36 +1,37 @@
 package me.backend.features.race.dto;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import me.backend.features.race.RaceResult;
 
 import java.math.BigDecimal;
 
 public record CreateRaceResultRequest(
-        @NotNull
         @Positive
-        int position,
+        Integer position,
 
         @NotNull
-        @Positive
+        @PositiveOrZero
+        @Digits(integer = 4, fraction = 2)
         BigDecimal points,
 
         @NotNull
-        boolean fastestLap,
+        Boolean fastestLap,
 
         @NotNull
         RaceResult.Status status,
 
-        @NotNull
         @Positive
-        long totalRaceTimeMs,
+        Long totalRaceTimeMs,
 
         @NotNull
         @Positive
-        long driverId,
+        Long driverId,
 
         @NotNull
         @Positive
-        long raceId
+        Long raceId
 ) {
 }
