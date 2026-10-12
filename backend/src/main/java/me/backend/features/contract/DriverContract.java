@@ -15,26 +15,33 @@ public class DriverContract {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "driver_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "driver_id", nullable = false)
     private Driver driver;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "season_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "season_id", nullable = false)
     private Season season;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
     private DriverRole driverRole;
 
+    @Column(nullable = false)
     private LocalDate contractStart;
+
+    @Column(nullable = false)
     private LocalDate contractEnd;
+
+    @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal salary;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private Status status;
 
     public enum DriverRole {
@@ -50,11 +57,8 @@ public class DriverContract {
         TERMINATED
     }
 
-    public DriverContract(Driver driver, Team team, Season season, DriverRole driverRole,
-                          LocalDate contractStart, LocalDate contractEnd, BigDecimal salary, Status status) {
-        this.driver = driver;
-        this.team = team;
-        this.season = season;
+    public DriverContract(DriverRole driverRole, LocalDate contractStart, LocalDate contractEnd,
+                          BigDecimal salary, Status status) {
         this.driverRole = driverRole;
         this.contractStart = contractStart;
         this.contractEnd = contractEnd;
