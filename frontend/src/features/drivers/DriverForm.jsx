@@ -1,55 +1,52 @@
 import { useState } from 'react'
-
-const initialState = {
-  firstName: '',
-  lastName: '',
-  nationality: '',
-  dateOfBirth: '',
-  number: '',
-  status: 'ACTIVE',
-}
+import {
+  driverStatuses,
+  emptyDriverForm,
+  toPayload,
+  validateDriver,
+} from './driverForm.js'
 
 function FieldError({ message }) {
   return message ? <small className="field-error">{message}</small> : null
 }
 
-function DriverForm({ onSubmit }) {
-  const [form, setForm] = useState(initialState)
+function DriverForm({ initialValues = emptyDriverForm, submitLabel, onSubmit, onCancel }) {
+  const [form, setForm] = useState(initialValues)
+  const [errors, setErrors] = useState({})
+  const [formError, setFormError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState(null)
-  const [fieldErrors, setFieldErrors] = useState({})
 
   const handleChange = (e) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
+    setErrors((prev) => ({ ...prev, [name]: undefined }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setSubmitting(true)
-    setError(null)
-    setFieldErrors({})
+    setFormError(null)
 
+    const clientErrors = validateDriver(form)
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors)
+      return
+    }
+
+    setErrors({})
+    setSubmitting(true)
     try {
-      await onSubmit({
-        firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
-        nationality: form.nationality.trim(),
-        dateOfBirth: form.dateOfBirth || null,
-        number: form.number === '' ? null : Number(form.number),
-        status: form.status,
-      })
-      setForm(initialState)
+      await onSubmit(toPayload(form))
     } catch (err) {
-      setError(err.message)
-      setFieldErrors(err.fieldErrors ?? {})
+      // server-side validation / conflict errors
+      setFormError(err.message)
+      setErrors(err.fieldErrors ?? {})
     } finally {
       setSubmitting(false)
     }
   }
 
   return (
-      <form className="driver-form" onSubmit={handleSubmit}>
+      <form className="driver-form" onSubmit={handleSubmit} noValidate>
         <label>
           First name
           <input
@@ -58,9 +55,9 @@ function DriverForm({ onSubmit }) {
               maxLength={100}
               value={form.firstName}
               onChange={handleChange}
-              required
+              aria-invalid={Boolean(errors.firstName)}
           />
-          <FieldError message={fieldErrors.firstName} />
+          <FieldError message={errors.firstName} />
         </label>
 
         <label>
@@ -71,9 +68,9 @@ function DriverForm({ onSubmit }) {
               maxLength={100}
               value={form.lastName}
               onChange={handleChange}
-              required
+              aria-invalid={Boolean(errors.lastName)}
           />
-          <FieldError message={fieldErrors.lastName} />
+          <FieldError message={errors.lastName} />
         </label>
 
         <label>
@@ -84,9 +81,9 @@ function DriverForm({ onSubmit }) {
               maxLength={100}
               value={form.nationality}
               onChange={handleChange}
-              required
+              aria-invalid={Boolean(errors.nationality)}
           />
-          <FieldError message={fieldErrors.nationality} />
+          <FieldError message={errors.nationality} />
         </label>
 
         <label>
@@ -96,8 +93,9 @@ function DriverForm({ onSubmit }) {
               name="dateOfBirth"
               value={form.dateOfBirth}
               onChange={handleChange}
+              aria-invalid={Boolean(errors.dateOfBirth)}
           />
-          <FieldError message={fieldErrors.dateOfBirth} />
+          <FieldError message={errors.dateOfBirth} />
         </label>
 
         <label>
@@ -107,28 +105,39 @@ function DriverForm({ onSubmit }) {
               name="number"
               min="0"
               max="999"
+              step="1"
               value={form.number}
               onChange={handleChange}
-              required
+              aria-invalid={Boolean(errors.number)}
           />
-          <FieldError message={fieldErrors.number} />
+          <FieldError message={errors.number} />
         </label>
 
         <label>
           Status
-          <select name="status" value={form.status} onChange={handleChange}>
-            <option value="ACTIVE">Active</option>
-            <option value="INACTIVE">Inactive</option>
-            <option value="RETIRED">Retired</option>
+          <select
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+              aria-invalid={Boolean(errors.status)}
+          >
+            {driverStatuses.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
           </select>
-          <FieldError message={fieldErrors.status} />
+          <FieldError message={errors.status} />
         </label>
 
-        {error && <p className="form-error">{error}</p>}
+        {formError && <p className="form-error">{formError}</p>}
 
-        <button type="submit" disabled={submitting}>
-          {submitting ? 'Creating...' : 'Create driver'}
-        </button>
+        <div className="form-actions">
+          <button type="submit" className="btn btn--primary" disabled={submitting}>
+            {submitting ? 'Saving...' : submitLabel}
+          </button>
+          <button type="button" className="btn" onClick={onCancel} disabled={submitting}>
+            Cancel
+          </button>
+        </div>
       </form>
   )
 }
