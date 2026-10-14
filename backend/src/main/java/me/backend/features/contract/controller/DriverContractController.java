@@ -21,8 +21,8 @@ public class DriverContractController {
     }
 
     @GetMapping
-    public ResponseEntity<List<DriverContractResponse>> getAll() {
-        return ResponseEntity.ok(driverContractService.getAll());
+    public ResponseEntity<List<DriverContractResponse>> getAll(@RequestParam(required = false) Long driverId) {
+        return ResponseEntity.ok(driverContractService.getAll(driverId));
     }
 
     @GetMapping("/{id}")

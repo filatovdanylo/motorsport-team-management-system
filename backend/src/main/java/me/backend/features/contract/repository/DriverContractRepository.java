@@ -19,6 +19,15 @@ public interface DriverContractRepository extends JpaRepository<DriverContract, 
 
     @Query("""
             SELECT dc FROM DriverContract dc
+            JOIN FETCH dc.driver d
+            JOIN FETCH dc.team
+            JOIN FETCH dc.season
+            WHERE d.id = :driverId
+            """)
+    List<DriverContract> findAllByDriverIdWithDetails(@Param("driverId") Long driverId);
+
+    @Query("""
+            SELECT dc FROM DriverContract dc
             JOIN FETCH dc.driver
             JOIN FETCH dc.team
             JOIN FETCH dc.season

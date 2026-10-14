@@ -45,8 +45,12 @@ public class DriverContractService {
         this.entityManager = entityManager;
     }
 
-    public List<DriverContractResponse> getAll() {
-        return driverContractRepository.findAllWithDetails().stream()
+    public List<DriverContractResponse> getAll(Long driverId) {
+        List<DriverContract> contracts = driverId == null
+                ? driverContractRepository.findAllWithDetails()
+                : driverContractRepository.findAllByDriverIdWithDetails(driverId);
+
+        return contracts.stream()
                 .map(DriverContractService::mapContractToDto)
                 .toList();
     }
