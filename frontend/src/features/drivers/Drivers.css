@@ -1,0 +1,103 @@
+.driver-page h1 {
+  margin: 0 0 24px;
+}
+
+/* form */
+.driver-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px 16px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.driver-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.driver-form input,
+.driver-form select {
+  padding: 6px 8px;
+  font: inherit;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.driver-form button {
+  grid-column: 1 / -1;
+  justify-self: start;
+  padding: 8px 16px;
+  font: inherit;
+  color: var(--bg);
+  background: var(--text);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.driver-form button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.field-error,
+.form-error,
+.driver-message--error {
+  color: var(--danger);
+}
+
+.form-error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+/* list */
+.driver-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.driver {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.driver-number {
+  min-width: 3ch;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.driver-name {
+  flex: 1;
+}
+
+.driver-meta {
+  color: var(--muted);
+}
+
+.driver-status {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.driver-status--active {
+  color: var(--ok);
+}
+
+.driver-message {
+  color: var(--muted);
+}

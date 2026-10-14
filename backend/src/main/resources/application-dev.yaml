@@ -3,3 +3,8 @@ spring:
     url: jdbc:postgresql://localhost:5433/motorsport-management-system-db
     username: postgres
     password: ${DATABASE_DEV_PASSWORD}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
