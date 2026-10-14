@@ -1,6 +1,7 @@
 package me.backend.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -34,6 +35,21 @@ public class GlobalExceptionHandler {
         problemDetail.setProperty("timestamp", Instant.now());
 
         log.warn("Validation failed for request parameters: {}", fieldErrors);
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "Driver cannot be deleted because it is referenced by contracts or race results"
+        );
+
+        problemDetail.setTitle("Conflict");
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        log.error("Driver cannot be deleted", ex);
 
         return problemDetail;
     }

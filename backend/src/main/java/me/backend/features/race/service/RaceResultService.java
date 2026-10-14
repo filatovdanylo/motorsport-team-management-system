@@ -40,9 +40,13 @@ public class RaceResultService {
         this.entityManager = entityManager;
     }
 
-    public List<RaceResultResponse> getAll() {
-        return raceResultRepository.getAllWithDetails()
-                .stream().map(RaceResultService::mapRaceResultToDto)
+    public List<RaceResultResponse> getAll(Long driverId) {
+        List<RaceResult> results = driverId == null
+                ? raceResultRepository.getAllWithDetails()
+                : raceResultRepository.findAllByDriverIdWithDetails(driverId);
+
+        return results.stream()
+                .map(RaceResultService::mapRaceResultToDto)
                 .toList();
     }
 

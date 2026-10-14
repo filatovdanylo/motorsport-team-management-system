@@ -22,8 +22,8 @@ public class RaceResultController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RaceResultResponse>> getAll() {
-        return ResponseEntity.ok(raceResultService.getAll());
+    public ResponseEntity<List<RaceResultResponse>> getAll(@RequestParam(required = false) Long driverId) {
+        return ResponseEntity.ok(raceResultService.getAll(driverId));
     }
 
     @GetMapping("/{id}")

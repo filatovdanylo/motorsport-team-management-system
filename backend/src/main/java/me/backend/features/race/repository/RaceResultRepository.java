@@ -20,6 +20,16 @@ public interface RaceResultRepository extends JpaRepository<RaceResult, Long> {
 
     @Query("""
             SELECT rr FROM RaceResult rr
+            JOIN FETCH rr.driver d
+            JOIN FETCH rr.race r
+            JOIN FETCH r.circuit
+            JOIN FETCH r.season
+            WHERE d.id = :driverId
+            """)
+    List<RaceResult> findAllByDriverIdWithDetails(@Param("driverId") Long driverId);
+
+    @Query("""
+            SELECT rr FROM RaceResult rr
             JOIN FETCH rr.driver
             JOIN FETCH rr.race r
             JOIN FETCH r.circuit
